@@ -14,22 +14,24 @@ const sass = require("gulp-sass");
 const uglify = require("gulp-uglify");
 
 // Load package.json for banner
-const pkg = require('./package.json');
+const pkg = require("./package.json");
 
 // Set the banner content
-const banner = ['/*!\n',
-  ' * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
-  ' * Copyright 2013-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
-  ' * Licensed under <%= pkg.license %> (https://github.com/BlackrockDigital/<%= pkg.name %>/blob/master/LICENSE)\n',
-  ' */\n',
-  '\n'
-].join('');
+const banner = [
+  "/*!\n",
+  " * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n",
+  " * Copyright 2013-" + new Date().getFullYear(),
+  " <%= pkg.author %>\n",
+  " * Licensed under <%= pkg.license %> (https://github.com/BlackrockDigital/<%= pkg.name %>/blob/master/LICENSE)\n",
+  " */\n",
+  "\n"
+].join("");
 
 // BrowserSync
 function browserSync(done) {
   browsersync.init({
     server: {
-      baseDir: "./"
+      baseDir: "./public/"
     },
     port: 3000
   });
@@ -44,30 +46,41 @@ function browserSyncReload(done) {
 
 // Clean vendor
 function clean() {
-  return del(["./vendor/"]);
+  return del(["./public/vendor/"]);
 }
 
 // Bring third party dependencies from node_modules into vendor directory
 function modules() {
   // Bootstrap
-  var bootstrap = gulp.src('./node_modules/bootstrap/dist/**/*')
-    .pipe(gulp.dest('./vendor/bootstrap'));
+  var bootstrap = gulp
+    .src("./node_modules/bootstrap/dist/**/*")
+    .pipe(gulp.dest("./public/vendor/bootstrap"));
   // Font Awesome CSS
-  var fontAwesomeCSS = gulp.src('./node_modules/@fortawesome/fontawesome-free/css/**/*')
-    .pipe(gulp.dest('./vendor/fontawesome-free/css'));
+  var fontAwesomeCSS = gulp
+    .src("./node_modules/@fortawesome/fontawesome-free/css/**/*")
+    .pipe(gulp.dest("./public/vendor/fontawesome-free/css"));
   // Font Awesome Webfonts
-  var fontAwesomeWebfonts = gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/**/*')
-    .pipe(gulp.dest('./vendor/fontawesome-free/webfonts'));
+  var fontAwesomeWebfonts = gulp
+    .src("./node_modules/@fortawesome/fontawesome-free/webfonts/**/*")
+    .pipe(gulp.dest("./public/vendor/fontawesome-free/webfonts"));
   // jQuery Easing
-  var jqueryEasing = gulp.src('./node_modules/jquery.easing/*.js')
-    .pipe(gulp.dest('./vendor/jquery-easing'));
+  var jqueryEasing = gulp
+    .src("./node_modules/jquery.easing/*.js")
+    .pipe(gulp.dest("./public/vendor/jquery-easing"));
   // jQuery
-  var jquery = gulp.src([
-      './node_modules/jquery/dist/*',
-      '!./node_modules/jquery/dist/core.js'
+  var jquery = gulp
+    .src([
+      "./node_modules/jquery/dist/*",
+      "!./node_modules/jquery/dist/core.js"
     ])
-    .pipe(gulp.dest('./vendor/jquery'));
-  return merge(bootstrap, fontAwesomeCSS, fontAwesomeWebfonts, jquery, jqueryEasing);
+    .pipe(gulp.dest("./public/vendor/jquery"));
+  return merge(
+    bootstrap,
+    fontAwesomeCSS,
+    fontAwesomeWebfonts,
+    jquery,
+    jqueryEasing
+  );
 }
 
 // CSS task
@@ -75,41 +88,50 @@ function css() {
   return gulp
     .src("./scss/**/*.scss")
     .pipe(plumber())
-    .pipe(sass({
-      outputStyle: "expanded",
-      includePaths: "./node_modules",
-    }))
+    .pipe(
+      sass({
+        outputStyle: "expanded",
+        includePaths: "./node_modules"
+      })
+    )
     .on("error", sass.logError)
-    .pipe(autoprefixer({
-      cascade: false
-    }))
-    .pipe(header(banner, {
-      pkg: pkg
-    }))
+    .pipe(
+      autoprefixer({
+        cascade: false
+      })
+    )
+    .pipe(
+      header(banner, {
+        pkg: pkg
+      })
+    )
     .pipe(gulp.dest("./css"))
-    .pipe(rename({
-      suffix: ".min"
-    }))
+    .pipe(
+      rename({
+        suffix: ".min"
+      })
+    )
     .pipe(cleanCSS())
-    .pipe(gulp.dest("./css"))
+    .pipe(gulp.dest("./public/css"))
     .pipe(browsersync.stream());
 }
 
 // JS task
 function js() {
   return gulp
-    .src([
-      './js/*.js',
-      '!./js/*.min.js'
-    ])
+    .src(["./js/*.js", "!./js/*.min.js"])
     .pipe(uglify())
-    .pipe(header(banner, {
-      pkg: pkg
-    }))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest('./js'))
+    .pipe(
+      header(banner, {
+        pkg: pkg
+      })
+    )
+    .pipe(
+      rename({
+        suffix: ".min"
+      })
+    )
+    .pipe(gulp.dest("./public/js"))
     .pipe(browsersync.stream());
 }
 
